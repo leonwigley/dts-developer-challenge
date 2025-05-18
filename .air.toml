@@ -1,0 +1,45 @@
+# Air configuration file for GoRemote
+
+[build]
+  # Command to build the server application
+  cmd = "go build -o ./bin/server ./"
+
+  # Binary output name
+  bin = "./bin/server"
+
+  # Files to include in the build/watch
+  include_ext = ["go", "html", "css", "js", "ttf", "png", "jpg", "svg"]
+
+  # Directories to exclude from triggering a rebuild
+  exclude_dir = ["bin", "data", "tmp"]
+
+  # Files to exclude (e.g., database files)
+  exclude_file = ["*.db", "*.db-shm", "*.db-wal"]
+
+  # Delay before rebuilding (in milliseconds)
+  delay = 5
+
+[run]
+  # Command to run the application
+  cmd = "./bin/server"
+
+[watcher]
+  # Directories to watch for changes
+  paths = ["public"]
+
+  # File extensions to watch
+  extensions = ["go", "html", "css", "js", "ttf", "png", "jpg", "svg", "mp4", "webm"]
+
+  # Files/directories to ignore
+  ignore_paths = ["bin", "data", "logs", "tmp", "scraper"]
+
+[log]
+  # Log level (debug, info, warn, error)
+  level = "info"
+
+  # Enable/disable color in logs
+  color = true
+
+[misc]
+  # Clean up temporary files on exit
+  clean_on_exit = true

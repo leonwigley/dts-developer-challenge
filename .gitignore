@@ -1,0 +1,11 @@
+# Server
+server/logs/*
+server/data/*
+
+# Env
+.env
+*.env
+.env.*
+
+# Air temp files
+tmp/

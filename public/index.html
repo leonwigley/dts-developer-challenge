@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HMCTS Task Management</title>
+    <link rel="shortcut icon" href="/assets/favicon.ico" type="image/x-icon">
+    <link href="/assets/css/normalize.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
+    <script src="/assets/js/htmx.min.js"></script>
+
+</head>
+
+<body>
+    <header class="note">
+        <p><strong>Do not use:</strong> Her Majesty's Courts and Tribunals
+            Service internal staff use!</p>
+    </header>
+    <nav>
+        <div>
+            <img src="/assets/images/HMCTS.png" alt="HMCTS logo">
+            <h2 href="/" class="logo">HMCTS</h2>
+        </div>
+        <ul>
+            <li><a href="https://hmctsjobs.co.uk/" class="btn">Offical HMCTS website</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section class="container">
+            <h1>Tasks</h1>
+            <hr>
+
+            <form hx-post="/api/tasks" hx-target="#task-list" hx-swap="innerHTML">
+                <label for="title">Task title</label>
+                <input type="text" name="title" placeholder="Task title" required>
+                <label for="description">Description</label>
+                <textarea name="description" placeholder="Description"></textarea>
+                <!-- <label for="dueDate">Due</label>
+                <input type="datetime-local" name="dueDate" placeholder="Due date"> -->
+                <button type="submit">Add Task</button>
+            </form>
+
+            <div id="task-list">
+                {{ range .Tasks }}
+                <div class="task" id="task-{{ .ID }}">
+                    <h3>{{ .Title }}</h3>
+                    <p>{{ .Description }}</p>
+                    <p><strong>Status:</strong> {{ .Status }}</p>
+                    <p><strong>Due:</strong> {{ .DueDate.Format "2006-01-02 15:04" }}</p>
+                    <button hx-delete="/api/tasks/{{ .ID }}" hx-target="#task-{{ .ID }}"
+                        hx-swap="outerHTML">Delete</button>
+                    <button hx-put="/api/tasks/{{ .ID }}" hx-vals='{"status": "completed"}' hx-target="#task-{{ .ID }}"
+                        hx-swap="outerHTML">Complete</button>
+                </div>
+                {{ else }}
+                <p>No tasks yet.</p>
+                {{ end }}
+            </div>
+        </section>
+    </main>
+    <script>
+
+    </script>
+</body>
+
+</html>
