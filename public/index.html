@@ -14,7 +14,7 @@
 
 <body>
     <header class="note">
-        <p><strong>Do not use:</strong> Her Majesty's Courts and Tribunals
+        <p><strong>Do not use:</strong> This is not for Her Majesty's Courts and Tribunals
             Service internal staff use!</p>
     </header>
     <nav>
@@ -29,9 +29,10 @@
     <main>
         <section class="container">
             <h1>Tasks</h1>
+
             <hr>
 
-            <form hx-post="/api/tasks" hx-target="#task-list" hx-swap="innerHTML">
+            <form hx-post="/api/tasks">
                 <label for="title">Task</label>
                 <input type="text" name="task" placeholder="Task" required>
                 <label for="description">Description</label>
@@ -41,27 +42,11 @@
                 <button type="submit">Add Task</button>
             </form>
 
-            <div id="task-list">
-                {{ range .Tasks }}
-                <div class="task" id="task-{{ .ID }}">
-                    <h3>{{ .Title }}</h3>
-                    <p>{{ .Description }}</p>
-                    <p><strong>Status:</strong> {{ .Status }}</p>
-                    <p><strong>Due:</strong> {{ .DueDate.Format "2006-01-02 15:04" }}</p>
-                    <button hx-delete="/api/tasks/{{ .ID }}" hx-target="#task-{{ .ID }}"
-                        hx-swap="outerHTML">Delete</button>
-                    <button hx-put="/api/tasks/{{ .ID }}" hx-vals='{"status": "completed"}' hx-target="#task-{{ .ID }}"
-                        hx-swap="outerHTML">Complete</button>
-                </div>
-                {{ else }}
-                <p>No tasks yet.</p>
-                {{ end }}
+            <div class="tasks" hx-get="/api/tasks" hx-trigger="load" hx-swap="innerHTML">
+                <p>Loading tasks...</p>
             </div>
+
         </section>
     </main>
-    <script>
-
-    </script>
 </body>
-
 </html>
