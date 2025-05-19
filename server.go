@@ -85,6 +85,7 @@ func main() {
 		c.HTML(http.StatusOK, "index.html", gin.H{"Tasks": tasks})
 	})
 
+	// Create a new task
 	r.POST("/api/tasks", func(c *gin.Context) {
 		var task Task
 		if err := c.ShouldBind(&task); err != nil {
@@ -92,7 +93,11 @@ func main() {
 			return
 		}
 
-		task.ID = uuid.NewRandom().String
+		task.ID = uuid.NewString()
+		if task.ID == "" {
+			c.JSON(500, gin.H{"error": "Failed to generate UUID"})
+			return
+		}
 		task.Status = "to do"
 
 		// Debugging output
@@ -102,50 +107,77 @@ func main() {
 		fmt.Printf("Task DueDate: %s\n", task.DueDate)
 		fmt.Printf("Task Status: %s\n", task.Status)
 
-		_, err := db.Exec("INSERT INTO tasks (id, task, description, dueDate, status) VALUES (?, ?, ?, ?, ?)",
+		res, err := db.Exec("INSERT INTO tasks (id, task, description, dueDate, status) VALUES (?, ?, ?, ?, ?)",
 			task.ID, task.Task, task.Description, task.DueDate, task.Status)
 		if err != nil {
+			log.Printf("Failed to insert task: %v\n", err)
 			c.JSON(500, gin.H{"error": "Failed to create task"})
 			return
 		}
 
+		rowsAffected, _ := res.RowsAffected()
+		log.Printf("Successfully inserted task %s (Rows affected: %d)\n", task.ID, rowsAffected)
+
 		c.JSON(200, gin.H{"message": "Task created", "task": task})
 	})
 
-	// r.GET("/api/tasks", func(c *gin.Context) {
-	// 	tasks, err := getAllTasks()
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tasks"})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, tasks)
-	// })
+	// Get all tasks
+	r.GET("/api/tasks", func(c *gin.Context) {
+		tasks, err := getAllTasks()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tasks"})
+			return
+		}
+		c.JSON(http.StatusOK, tasks)
+	})
 
-	// r.PUT("/api/tasks/:id", func(c *gin.Context) {
-	// 	id := c.Param("id")
-	// 	var task Task
-	// 	if err := c.ShouldBindJSON(&task); err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-	// 		return
-	// 	}
+	// Get task by ID
+	r.GET("/api/tasks/:id", func(c *gin.Context) {
+		id := c.Param("id")
 
-	// 	_, err := db.Exec("UPDATE tasks SET status = ? WHERE id = ?", task.Status, id)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update task"})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, gin.H{"status": "updated"})
-	// })
+		var task Task
+		err := db.QueryRow("SELECT id, task, description, dueDate, status FROM tasks WHERE id = ?", id).
+			Scan(&task.ID, &task.Task, &task.Description, &task.DueDate, &task.Status)
 
-	// r.DELETE("/api/tasks/:id", func(c *gin.Context) {
-	// 	id := c.Param("id")
-	// 	_, err := db.Exec("DELETE FROM tasks WHERE id = ?", id)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete task"})
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusOK, gin.H{"status": "deleted"})
-	// })
+		if err != nil {
+			if err == sql.ErrNoRows {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database query failed"})
+			}
+			return
+		}
+
+		c.JSON(http.StatusOK, task)
+	})
+
+	// Delete task by ID
+	r.DELETE("/api/tasks/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		result, err := db.Exec("DELETE FROM tasks WHERE id = ?", id)
+		if err != nil {
+			log.Printf("Failed to delete task: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete task"})
+			return
+		}
+
+		rowsAffected, err := result.RowsAffected()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not determine result of deletion"})
+			return
+		}
+
+		if rowsAffected == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
+			return
+		}
+
+		log.Printf("Task %s deleted (Rows affected: %d)\n", id, rowsAffected)
+		c.JSON(http.StatusOK, gin.H{"message": "Task deleted", "id": id})
+	})
+
+	// Update task by ID
 
 	fmt.Println("Server running on http://localhost:3000")
 	log.Fatal(r.Run(":3000"))
