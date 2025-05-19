@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -90,12 +91,24 @@ func main() {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-		// Process task (e.g., save to database)
+
+		task.ID = uuid.NewRandom().String
+		task.Status = "to do"
+
+		// Debugging output
 		fmt.Printf("Task ID: %s\n", task.ID)
 		fmt.Printf("Task Title: %s\n", task.Task)
 		fmt.Printf("Task Description: %s\n", task.Description)
 		fmt.Printf("Task DueDate: %s\n", task.DueDate)
 		fmt.Printf("Task Status: %s\n", task.Status)
+
+		_, err := db.Exec("INSERT INTO tasks (id, task, description, dueDate, status) VALUES (?, ?, ?, ?, ?)",
+			task.ID, task.Task, task.Description, task.DueDate, task.Status)
+		if err != nil {
+			c.JSON(500, gin.H{"error": "Failed to create task"})
+			return
+		}
+
 		c.JSON(200, gin.H{"message": "Task created", "task": task})
 	})
 
