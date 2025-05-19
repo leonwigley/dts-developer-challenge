@@ -128,7 +128,7 @@ func main() {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tasks"})
 			return
 		}
-		c.JSON(http.StatusOK, tasks)
+		c.HTML(http.StatusOK, "tasks.html", tasks)
 	})
 
 	// Get task by ID

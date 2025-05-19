@@ -1,0 +1,14 @@
+{{ if . }}
+    {{ range . }}
+    <div class="task" id="task-{{ .ID }}">
+        <h3>{{ .Task }}</h3>
+        <p>{{ .Description }}</p>
+        <p><strong>Status:</strong> {{ .Status }}</p>
+        <p><strong>Due:</strong> {{ .DueDate }}</p>
+        <button hx-delete="/api/tasks/{{ .ID }}" hx-target="#task-{{ .ID }}" hx-swap="outerHTML">Delete</button>
+        <button hx-put="/api/tasks/{{ .ID }}" hx-vals='{"status": "completed"}' hx-target="#task-{{ .ID }}" hx-swap="outerHTML">Complete</button>
+    </div>
+    {{ end }}
+{{ else }}
+    <p>No tasks yet.</p>
+{{ end }}
