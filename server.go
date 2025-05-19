@@ -118,7 +118,7 @@ func main() {
 		rowsAffected, _ := res.RowsAffected()
 		log.Printf("Successfully inserted task %s (Rows affected: %d)\n", task.ID, rowsAffected)
 
-		c.JSON(200, gin.H{"message": "Task created", "task": task})
+		c.HTML(http.StatusOK, "task.html", task)
 	})
 
 	// Get all tasks
@@ -128,7 +128,13 @@ func main() {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tasks"})
 			return
 		}
-		c.HTML(http.StatusOK, "tasks.html", tasks)
+
+		if c.GetHeader("HX-Request") == "true" {
+			c.HTML(http.StatusOK, "task.html", tasks)
+			return
+		}
+
+		c.JSON(http.StatusOK, tasks)
 	})
 
 	// Get task by ID
@@ -157,24 +163,19 @@ func main() {
 
 		result, err := db.Exec("DELETE FROM tasks WHERE id = ?", id)
 		if err != nil {
-			log.Printf("Failed to delete task: %v\n", err)
+			log.Printf("Delete error: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete task"})
 			return
 		}
 
-		rowsAffected, err := result.RowsAffected()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not determine result of deletion"})
-			return
-		}
-
+		rowsAffected, _ := result.RowsAffected()
 		if rowsAffected == 0 {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
 			return
 		}
 
-		log.Printf("Task %s deleted (Rows affected: %d)\n", id, rowsAffected)
-		c.JSON(http.StatusOK, gin.H{"message": "Task deleted", "id": id})
+		log.Printf("Deleted task %s\n", id)
+		c.Status(http.StatusNoContent)
 	})
 
 	// Update task by ID

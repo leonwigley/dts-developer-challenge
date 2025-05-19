@@ -32,8 +32,8 @@
 
             <hr>
 
-            <form hx-post="/api/tasks">
-                <label for="title">Task</label>
+            <form hx-post="/api/tasks" hx-target=".tasks" hx-swap="beforeend">
+                <label for="task">Task</label>
                 <input type="text" name="task" placeholder="Task" required>
                 <label for="description">Description</label>
                 <textarea name="description" placeholder="Task description"></textarea>
