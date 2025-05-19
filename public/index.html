@@ -32,12 +32,12 @@
             <hr>
 
             <form hx-post="/api/tasks" hx-target="#task-list" hx-swap="innerHTML">
-                <label for="title">Task title</label>
-                <input type="text" name="title" placeholder="Task title" required>
+                <label for="title">Task</label>
+                <input type="text" name="task" placeholder="Task" required>
                 <label for="description">Description</label>
-                <textarea name="description" placeholder="Description"></textarea>
-                <!-- <label for="dueDate">Due</label>
-                <input type="datetime-local" name="dueDate" placeholder="Due date"> -->
+                <textarea name="description" placeholder="Task description"></textarea>
+                <label for="dueDate">Due</label>
+                <input type="datetime-local" name="dueDate" placeholder="Due date">
                 <button type="submit">Add Task</button>
             </form>
 
