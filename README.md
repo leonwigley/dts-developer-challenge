@@ -21,6 +21,11 @@ $ go mod tidy
 $ air
 ```
 
+OR (**optional**): run the binary included within 'bin/' (**may not work for all systems**)
+```
+$ bin/./server
+```
+
 Go to ```http://localhost:3000/``` in your browser.
 
 ### 🛠️ Tech Stack 
