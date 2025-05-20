@@ -118,7 +118,7 @@ func main() {
 		rowsAffected, _ := res.RowsAffected()
 		log.Printf("Successfully inserted task %s (Rows affected: %d)\n", task.ID, rowsAffected)
 
-		c.HTML(http.StatusOK, "task.html", task)
+		c.HTML(http.StatusOK, "task.html", []Task{task})
 	})
 
 	// Get all tasks
@@ -175,7 +175,7 @@ func main() {
 		}
 
 		log.Printf("Deleted task %s\n", id)
-		c.Status(http.StatusNoContent)
+		c.Data(http.StatusOK, "text/html", []byte(""))
 	})
 
 	// Update task by ID
