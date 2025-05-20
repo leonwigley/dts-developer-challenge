@@ -12,7 +12,7 @@ _The most robust to-do list, the world has ever seen._
   - **macOS**: `brew install sqlite` (requires [Homebrew](https://brew.sh/))
   - **Windows**: Download and install from [SQLite website](https://www.sqlite.org/download.html) or use a package manager like Chocolatey (`choco install sqlite`)
 
-Run the following commands to start this project:
+Run the following commands to start this project (**Recommended**):
 
 ```bash
 $ git clone https://github.com/leonwigley/dts-developer-challenge.git
@@ -21,7 +21,7 @@ $ go mod tidy
 $ air
 ```
 
-OR (**optional**): run the binary included within 'bin/' (**may not work for all systems**)
+_OR_ run the binary included within ```bin/``` (**Optional: may not work for all systems!**)
 ```
 $ bin/./server
 ```
