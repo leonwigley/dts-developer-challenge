@@ -1,12 +1,16 @@
 # ⚖️ HMCTS DTS Developer Challenge
+_The most robust to-do list, the world has ever seen._
 
 ## 🚀 Usage
 
 > Before you start, make sure you have the following installed:
 
-Go (version 1.20 or higher): https://go.dev/dl/
-
-Air (live reloading tool): https://github.com/air-verse/air
+- **Go** (version 1.20 or higher): https://go.dev/dl/
+- **Air** (live reloading tool): https://github.com/air-verse/air
+- **SQLite**: Required for the database.
+  - **Linux (Ubuntu/Debian)**: `sudo apt install sqlite3`
+  - **macOS**: `brew install sqlite` (requires [Homebrew](https://brew.sh/))
+  - **Windows**: Download and install from [SQLite website](https://www.sqlite.org/download.html) or use a package manager like Chocolatey (`choco install sqlite`)
 
 Run the following commands to start this project:
 
@@ -38,7 +42,7 @@ Go to ```http://localhost:3000/``` in your browser.
 - Update task status (e.g. mark as completed): **press Complete**, or use:  ```curl -X PUT http://localhost:3000/api/tasks/:id -d 'status=completed'```
 - Delete a task by id: **press Delete**, or use: ```curl -X DELETE http://localhost:3000/api/tasks/:id```
 - Includes validation and error handling
-- Includes unit tests
+- Includes unit tests, use: ```go test -v```
 
 ---
 

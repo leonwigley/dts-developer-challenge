@@ -1,11 +1,14 @@
-# Server
-server/logs/*
-server/data/*
-
 # Env
 .env
 *.env
 .env.*
+
+# Database
+data/*
+*.db-wal
+*.db-shm
+*.db-journal
+*.db
 
 # Air temp files
 tmp/
