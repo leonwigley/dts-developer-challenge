@@ -178,7 +178,40 @@ func main() {
 		c.Data(http.StatusOK, "text/html", []byte(""))
 	})
 
-	// Update task by ID
+	// Update task status by ID
+	r.PUT("/api/tasks/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		var input struct {
+			Status string `json:"status" form:"status"`
+		}
+		if err := c.ShouldBind(&input); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+			return
+		}
+
+		if input.Status != "completed" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid status update"})
+			return
+		}
+
+		_, err := db.Exec("UPDATE tasks SET status = ? WHERE id = ?", input.Status, id)
+		if err != nil {
+			log.Printf("Update error: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update task"})
+			return
+		}
+
+		var updated Task
+		err = db.QueryRow("SELECT id, task, description, dueDate, status FROM tasks WHERE id = ?", id).
+			Scan(&updated.ID, &updated.Task, &updated.Description, &updated.DueDate, &updated.Status)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve updated task"})
+			return
+		}
+
+		c.HTML(http.StatusOK, "task.html", []Task{updated})
+	})
 
 	fmt.Println("Server running on http://localhost:3000")
 	log.Fatal(r.Run(":3000"))
